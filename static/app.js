@@ -18,6 +18,7 @@ let state = {
 // DOM Elements
 const elements = {
     themeToggle: document.getElementById('theme-toggle'),
+    exportBtn: document.getElementById('export-btn'),
     refreshBtn: document.getElementById('refresh-btn'),
     refreshIcon: document.querySelector('#refresh-btn .spinner-icon'),
     statsDashboard: document.getElementById('stats-dashboard'),
@@ -254,7 +255,7 @@ function createCardElement(item, index) {
             ${item.html}
         </div>
         <div class="card-footer">
-            <button class="btn btn-secondary btn-icon card-copy-btn" title="Copy link to update" aria-label="Copy update link">
+            <button class="btn btn-secondary btn-icon card-copy-btn" title="Copy update details to clipboard" aria-label="Copy update details">
                 <i data-lucide="copy" style="width:16px; height:16px;"></i>
             </button>
             <button class="btn btn-primary card-share-btn" title="Select and Tweet this update">
@@ -267,7 +268,8 @@ function createCardElement(item, index) {
     // Copy link button handler
     card.querySelector('.card-copy-btn').addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent card selection
-        copyToClipboard(item.link);
+        const detailsText = `BigQuery Release Note (${item.date}) - [${item.category}]:\n${item.text}\n\nDetails: ${item.link}`;
+        copyToClipboard(detailsText, "Release details copied to clipboard!");
     });
     
     // Individual Tweet button handler (automatically selects and opens drawer)
@@ -434,12 +436,65 @@ function sendTweet() {
     deselectCurrent();
 }
 
+function exportToCSV() {
+    if (state.filteredReleases.length === 0) {
+        showToast('No releases available to export', 'error');
+        return;
+    }
+    
+    // Define headers
+    const headers = ['ID', 'Date', 'Category', 'Updated Time', 'Link', 'Text Content'];
+    
+    // Process rows
+    const rows = state.filteredReleases.map(item => {
+        const escapeCSVValue = (val) => {
+            if (val === null || val === undefined) return '""';
+            const str = String(val).replace(/"/g, '""');
+            return `"${str}"`;
+        };
+        
+        return [
+            escapeCSVValue(item.id),
+            escapeCSVValue(item.date),
+            escapeCSVValue(item.category),
+            escapeCSVValue(item.updated_time),
+            escapeCSVValue(item.link),
+            escapeCSVValue(item.text)
+        ].join(',');
+    });
+    
+    // Combine header and rows
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    
+    // Create Blob
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create download link and simulate click
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    
+    // Generate filename based on active category
+    const categorySuffix = state.activeCategory !== 'all' ? `_${state.activeCategory.toLowerCase()}` : '';
+    link.setAttribute('download', `bigquery_releases${categorySuffix}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast(`Successfully exported ${state.filteredReleases.length} items to CSV!`);
+}
+
 // -------------------------------------------------------------
 // Interactive Helpers & Event Listeners
 // -------------------------------------------------------------
 function setupEventListeners() {
     // Theme Switch
     elements.themeToggle.addEventListener('click', toggleTheme);
+    
+    // Export CSV Click Handler
+    elements.exportBtn.addEventListener('click', exportToCSV);
     
     // Refresh & Retry
     elements.refreshBtn.addEventListener('click', fetchReleases);
@@ -553,7 +608,7 @@ function setupEventListeners() {
 }
 
 // Copy to Clipboard Utility
-function copyToClipboard(text) {
+function copyToClipboard(text, successMsg = 'Copied to clipboard!') {
     if (!navigator.clipboard) {
         // Fallback for older browsers
         const textarea = document.createElement('textarea');
@@ -564,20 +619,20 @@ function copyToClipboard(text) {
         textarea.select();
         try {
             document.execCommand('copy');
-            showToast('Link copied to clipboard!');
+            showToast(successMsg);
         } catch (err) {
             console.error('Fallback: Oops, unable to copy', err);
-            showToast('Failed to copy link', 'error');
+            showToast('Failed to copy text', 'error');
         }
         document.body.removeChild(textarea);
         return;
     }
     
     navigator.clipboard.writeText(text).then(() => {
-        showToast('Link copied to clipboard!');
+        showToast(successMsg);
     }, (err) => {
         console.error('Async: Could not copy text: ', err);
-        showToast('Failed to copy link', 'error');
+        showToast('Failed to copy text', 'error');
     });
 }
 
