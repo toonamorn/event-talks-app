@@ -59,7 +59,8 @@ const elements = {
     charCount: document.getElementById('char-count'),
     drawerPreviewText: document.getElementById('drawer-preview-text'),
     tagButtons: document.querySelectorAll('.hashtag-selector .tag-btn'),
-    toastContainer: document.getElementById('toast-container')
+    toastContainer: document.getElementById('toast-container'),
+    backToTopBtn: document.getElementById('back-to-top-btn')
 };
 
 // Initialize Application
@@ -617,6 +618,23 @@ function setupEventListeners() {
     
     // Share/Publish button click
     elements.sendTweetBtn.addEventListener('click', sendTweet);
+    
+    // Scroll listener for Back-to-Top button visibility
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+            elements.backToTopBtn.classList.add('visible');
+        } else {
+            elements.backToTopBtn.classList.remove('visible');
+        }
+    });
+    
+    // Back-to-Top click handler
+    elements.backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
 }
 
 // Copy to Clipboard Utility

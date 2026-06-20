@@ -1227,7 +1227,7 @@ input:checked + .slider:before {
  * ------------------------------------------------------------- */
 .toast-container {
     position: fixed;
-    bottom: 2rem;
+    top: 2rem;
     right: 2rem;
     z-index: 1100;
     display: flex;
@@ -1381,10 +1381,63 @@ input:checked + .slider:before {
     .toast-container {
         left: 1rem;
         right: 1rem;
-        bottom: 1rem;
+        top: 1rem;
+        bottom: auto;
     }
     
     .toast {
         width: 100%;
+    }
+}
+
+/* -------------------------------------------------------------
+ * Floating Back to Top Button
+ * ------------------------------------------------------------- */
+.back-to-top-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    z-index: 99;
+    transition: all var(--transition-medium);
+    transform: scale(0);
+    opacity: 0;
+}
+
+.back-to-top-btn.visible {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.back-to-top-btn:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--text-muted);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-glow), var(--shadow-md);
+}
+
+.back-to-top-btn:active {
+    transform: scale(0.95);
+}
+
+/* Adjust back to top for mobile screens to avoid clashing with bottom drawer when open */
+@media (max-width: 768px) {
+    .back-to-top-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 44px;
+        height: 44px;
     }
 }
