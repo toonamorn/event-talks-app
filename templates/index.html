@@ -38,11 +38,15 @@
                 </div>
                 
                 <div class="header-actions">
-                    <!-- Theme Toggle -->
-                    <button id="theme-toggle" class="btn-icon" aria-label="Toggle visual theme">
-                        <i data-lucide="sun" class="sun-icon"></i>
-                        <i data-lucide="moon" class="moon-icon"></i>
-                    </button>
+                    <!-- Theme Toggle Switch -->
+                    <div class="theme-switch-wrapper">
+                        <i data-lucide="moon" class="switch-icon moon-icon" id="icon-moon"></i>
+                        <label class="theme-switch" for="theme-checkbox">
+                            <input type="checkbox" id="theme-checkbox" aria-label="Toggle visual theme (Checked for Light Mode)">
+                            <span class="slider round"></span>
+                        </label>
+                        <i data-lucide="sun" class="switch-icon sun-icon" id="icon-sun"></i>
+                    </div>
                     
                     <!-- Export CSV Button -->
                     <button id="export-btn" class="btn btn-secondary" aria-label="Export filtered notes to CSV">

@@ -17,7 +17,9 @@ let state = {
 
 // DOM Elements
 const elements = {
-    themeToggle: document.getElementById('theme-toggle'),
+    themeCheckbox: document.getElementById('theme-checkbox'),
+    iconMoon: document.getElementById('icon-moon'),
+    iconSun: document.getElementById('icon-sun'),
     exportBtn: document.getElementById('export-btn'),
     refreshBtn: document.getElementById('refresh-btn'),
     refreshIcon: document.querySelector('#refresh-btn .spinner-icon'),
@@ -73,21 +75,29 @@ document.addEventListener('DOMContentLoaded', () => {
 function initTheme() {
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeToggleIcon(savedTheme);
+    if (elements.themeCheckbox) {
+        elements.themeCheckbox.checked = (savedTheme === 'light');
+    }
+    updateThemeSwitchVisuals(savedTheme);
 }
 
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+function handleThemeChange(e) {
+    const newTheme = e.target.checked ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    updateThemeToggleIcon(newTheme);
+    updateThemeSwitchVisuals(newTheme);
     showToast(`Switched to ${newTheme} mode`);
 }
 
-function updateThemeToggleIcon(theme) {
-    // Lucide handles icons. Since classes are hidden/shown via CSS,
-    // we don't strictly need manual manipulation but theme-toggle button uses CSS rules.
+function updateThemeSwitchVisuals(theme) {
+    if (!elements.iconSun || !elements.iconMoon) return;
+    if (theme === 'light') {
+        elements.iconSun.classList.add('active');
+        elements.iconMoon.classList.remove('active');
+    } else {
+        elements.iconSun.classList.remove('active');
+        elements.iconMoon.classList.add('active');
+    }
 }
 
 // -------------------------------------------------------------
@@ -490,8 +500,10 @@ function exportToCSV() {
 // Interactive Helpers & Event Listeners
 // -------------------------------------------------------------
 function setupEventListeners() {
-    // Theme Switch
-    elements.themeToggle.addEventListener('click', toggleTheme);
+    // Theme Switch Change Listener
+    if (elements.themeCheckbox) {
+        elements.themeCheckbox.addEventListener('change', handleThemeChange);
+    }
     
     // Export CSV Click Handler
     elements.exportBtn.addEventListener('click', exportToCSV);

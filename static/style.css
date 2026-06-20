@@ -985,20 +985,89 @@ h1, h2, h3, h4 {
 }
 
 /* -------------------------------------------------------------
- * Theme Icons State Toggle
+ * Theme Switch Toggle Slider
  * ------------------------------------------------------------- */
-#theme-toggle .sun-icon {
-    display: none;
-}
-#theme-toggle .moon-icon {
-    display: block;
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 0 0.75rem;
+    border-radius: 99px;
+    height: 44px;
+    transition: all var(--transition-fast);
 }
 
-[data-theme="light"] #theme-toggle .sun-icon {
-    display: block;
+.theme-switch-wrapper:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--text-muted);
 }
-[data-theme="light"] #theme-toggle .moon-icon {
-    display: none;
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border-color);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-primary);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:checked + .slider {
+    background-color: hsl(var(--color-primary));
+    border-color: hsl(var(--color-primary));
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+    background-color: #ffffff;
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.switch-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
+}
+
+.switch-icon.active {
+    color: var(--text-primary);
 }
 
 /* -------------------------------------------------------------
